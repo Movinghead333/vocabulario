@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vocabulario/models/vc_phrase.dart';
 import 'package:vocabulario/providers/vc_vocabulary_provider.dart';
+import 'package:vocabulario/vc_constants.dart';
 import 'package:vocabulario/vc_routes.dart';
 import 'package:vocabulario/widgets/vc_centered_loading_indicator.dart';
 
@@ -36,19 +37,41 @@ class _VcVocabularyListScreenState extends State<VcVocabularyListScreen> {
               VcPhrase phrase = phrases[index];
               return ListTile(
                 title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(phrase.sourceWord),
-                      Text('${phrase.successRate.toString()}% SR')
-                    ]),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      phrase.sourceWord,
+                      style: kVcMediumTextStyle,
+                    ),
+                    Text(
+                      '${phrase.successRate.toString()}% SR',
+                      style: kVcMediumTextStyle,
+                    )
+                  ],
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: phrase.translations
+                      .map((translation) => Text(translation))
+                      .toList(),
+                ),
+                onTap: () {
+                  vocabularyProvider.phraseSelectedForEdit = phrase;
+                  Navigator.pushNamed(
+                      context, VcRoutes.addOrEditPhraseScreenName);
+                },
               );
             },
           );
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
+          // Reset the phraseSelectedForEdit since we are creating a new phrase.
+          vocabularyProvider.phraseSelectedForEdit = null;
+
           // Navigate to add or edit word screen
           Navigator.pushNamed(context, VcRoutes.addOrEditPhraseScreenName);
         },

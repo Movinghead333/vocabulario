@@ -58,6 +58,8 @@ class VcVocabularyProvider {
   List<String> unmatchedTranslationsList = [];
   List<String> incorrectTranslationsList = [];
 
+  VcPhrase? phraseSelectedForEdit;
+
 /*
 -------------------------------- Business Logic --------------------------------
 */
@@ -131,6 +133,33 @@ class VcVocabularyProvider {
     } else {
       translationStatus = VcTranslationStatus.inProgress;
       chooseNewSelectedPhrase();
+    }
+  }
+
+  void saveOrUpdatePhrase(
+    String sourceWord,
+    String translation1,
+    String translation2,
+    String translation3,
+    String translation4,
+  ) {
+    List<String> nonEmptyTranslations = [];
+
+    if (translation1.isNotEmpty) nonEmptyTranslations.add(translation1);
+    if (translation2.isNotEmpty) nonEmptyTranslations.add(translation2);
+    if (translation3.isNotEmpty) nonEmptyTranslations.add(translation3);
+    if (translation4.isNotEmpty) nonEmptyTranslations.add(translation4);
+
+    if (phraseSelectedForEdit == null) {
+      VcPhrase newPhrase =
+          VcPhrase(sourceWord: sourceWord, translations: nonEmptyTranslations);
+
+      // Add the new phrase and use the setter to force the addition of a new
+      // item into stream so the UI refreshes.
+      phrases = phrases..add(newPhrase);
+    } else {
+      phraseSelectedForEdit!.sourceWord = sourceWord;
+      phraseSelectedForEdit!.translations = nonEmptyTranslations;
     }
   }
 
